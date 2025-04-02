@@ -31,3 +31,4 @@ dist/
 .env.development
 .env.production
 .vite/
+
