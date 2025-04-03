@@ -1,0 +1,19 @@
+fastapi==0.115.12
+pydantic==2.11.1
+pydantic_core==2.33.0
+PyJWT==2.10.1
+python-decouple==3.8
+uvicorn==0.34.0
+
+# Setup Instructions
+# 1. Create and Activate Virtual Environment
+# Windows:
+# python -m venv venv
+# venv\Scripts\activate
+# macOS/Linux:
+# python3 -m venv venv
+# source venv/bin/activate
+# 2. Install Dependencies
+# pip install -r prerequisites.txt
+# 3. Deactivate (Optional)
+# deactivate
