@@ -23,12 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
-# React + Vite
+# OS / Editor / Node stuff
+.DS_Store
 node_modules/
 dist/
-.env
-.env.local
-.env.development
-.env.production
+*.log
+*.map
+# Vite build cache
 .vite/
-
