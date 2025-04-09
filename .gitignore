@@ -2,7 +2,9 @@
 venv/
 
 # Backend
-backend/venv/
-backend/__pycache__/
+backend/venv/*
+backend/__pycache__/*
 backend/*.pyc
 backend/.env
+backend/dump.rdb
+

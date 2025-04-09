@@ -23,11 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# OS / Editor / Node stuff
-.DS_Store
-node_modules/
-dist/
-*.log
-*.map
-# Vite build cache
-.vite/
+vite.config.js
+svelte.config.js
+node_modules/+
+jsconfig.json
+pacage.json
+package-lock.json
+

@@ -1,72 +1,45 @@
-# import os
-# import mysql.connector as mysql
-# from dotenv import load_dotenv
+from decouple import config
+from fastapi import FastAPI, Form, Cookie, Response, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from schemas import UserLogin
+from sessions import create_sessions,get_user_id,delete_session
 
-from fastapi import FastAPI,Body, Depends
-from model import PostSchema,UserSchema,UserLoginSchema
-from jwt_handler import signJWT
-from jwt_bearer import jwtBearer
-app = FastAPI(title="PostOrbit")
+app = FastAPI()
 
-# db_host = os.getenv("DB_HOST")
-# db_user = os.getenv("DB_USER")
-# db_password = os.getenv("DB_PASSWORD")
-# db_name = os.getenv("DB_NAME")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[config('SVELTE_URL')],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-Posts = [
-     {
-         "id":1,
-         "name":"feroz",
-         "desc":"k3tamine super CEO"
-     },
-     {
-         "id":2,
-         "name":"taha",
-         "desc":"deactivated"
-     }
-     ]
+users = [{
+'name':'feroz',
+'password':'123'},
+]
 
-@app.get("/",tags=["greet"])
-def greet():
-    return "hi"
+@app.post('/login')
+def login(response:Response,user:UserLogin):
+       for u in users:
+        if u['name'] == user.name and u['password'] == user.password:
+            session_id = create_sessions(user.name)
+            response.set_cookie(key='session_id', value=session_id, httponly=True)
+            return {'message': 'login successful', 'session_id': session_id}
 
-@app.get("/posts")
-def posts():
-    return {"posts": Posts}
+@app.get('/me')
+def me(session_id:str = Cookie(None)):
+    if not session_id:
+        raise HTTPException(status_code=403,detail='login expired/unauthorized')
+    user_id = get_user_id(session_id)
+    if user_id:
+        return {'user':user_id}
+    raise HTTPException(status_code=403,detail='login expired/unauthorized')
 
-@app.get("/posts/{id}")
-def post(id:int):
-     if id>len(Posts):
-         return "not found"
-     for i in Posts: 
-         if id == i["id"]:
-             return i
-        
-@app.post("/addpost", dependencies=[Depends(jwtBearer())])
-def addpost(post:PostSchema):
-     post.id = len(Posts) + 1
-     Posts.append(post.dict())
-     return f"{post} added successfully"
-
-users=[]
-
-@app.post("/register")
-def Register(schema:UserSchema =Body()):
-    users.append(schema)
-    return f"{schema.name} added successfully."
-
-def check_user(schema:UserLoginSchema =Body()):
-    for user in users:
-        if user.email == schema.email and user.password == schema.password:
-            return True
-        else:
-            return False
-
-@app.post("/login", tags=["user"])
-def user_login(user:UserLoginSchema = Body(default=None)):
-    if check_user(user):
-        return signJWT(user.email)
-    else:
-        return {
-            "error":"inavlid creds."
-        }
+@app.post('/logout')
+def logout(response:Response,request:Request):
+    session_id = request.cookies.get('session_id')
+    if session_id:
+        delete_session(session_id)
+        response.delete_cookie('session_id')
+    return {'message':'logged out'}
