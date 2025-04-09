@@ -1,0 +1,74 @@
+firstly you start al three shits.
+fastapi,redis,svelte
+
+1) create sessions.py
+in this shit you create 3 functions to be used
+
+
+def create_session(user_id: str):
+    session_id = str(secrets.token_hex(20))
+    redis_client.setex(f'session:{session_id}',config('EXPIRY'), user_id)
+    return session_id
+
+def get_user_id(session_id:str):
+    return redis_client.get(f'session:{session_id}')
+
+def delete_session(session_id:str):
+    redis_client.delete(f'session:{session_id}')
+
+
+def create_session(uid:str):
+    session_id(secrets.token_hex(99))
+    redis_client.setex(f'session:{session_id}',expiry,uid)
+    return session_id
+
+def get_session(sesh_id:str):
+    return redis_client.get(f'session:{session_id}')
+
+def del_session(sesh_id:str):
+    redis_client.delete(f'session:{session_id}')
+
+
+then fastapi
+ENABLE CORS + in that allow credential=true
+
+@app.post('/')
+def smth(response:Response,user:str=Form(...),passwd:str=Form(...)):
+    session.id = create_session(name)
+    response.set_cookie(key='session_id',value={session_id},httponly=true)
+
+def smth('/me')
+def smth(session_id):
+    if not session_id:
+    raise httpexeption 401
+    else
+    uid=get_session(session_id)
+    if uid:
+    retun soidfhd
+    else:
+    rasie exception 403
+
+
+@app.post('/login')
+def login( response: Response,name: str = Form(...), password: str = Form(...)):
+    if name in users and users[name] == password:
+        session_id = create_session(name)
+        response.set_cookie(key='session_id', value=session_id, httponly=True)
+        return {'message': 'login success'}
+    else:
+        raise HTTPException(status_code=401, detail='invalid creds')
+
+# @app.get('/me')
+# def me(session_id:str = Cookie(None)):
+#     if not session_id:
+#         raise HTTPException(status_code:403, detail='expired/ not logged in')
+#     user_id = get_user_id(session_id)
+#     if user_id:
+#         return {'user': user_id}
+#     raise HTTPException(status_code:403,detail='Session expired')
+
+# @app.post("/logout")
+# def logout(response: Response, session_id: str = Cookie(None)):
+#     delete_session(session_id)
+#     response.delete_cookie("session_id")
+#     return {"message": "Logged out"}
