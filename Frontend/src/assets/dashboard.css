@@ -1,0 +1,27 @@
+.wrap_big{
+    padding: 10px;
+    display: flex;
+}
+
+.Dashboard h3{
+    text-align: center;
+}
+
+.wrap_big img{
+    width: 300px;
+    height: 300px;
+    background-color: rgb(51, 58, 58);
+}
+.wrapper {
+    padding: 20px;
+}
+
+.Dashboard label{
+    color: blue;
+}
+
+.Dashboard p{
+    text-align: left;
+    padding: 10px 20px;
+    background-color: rgb(184, 184, 184);
+}
