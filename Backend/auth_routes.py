@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Form, Cookie, Response, HTTPException, Request
 from schemas import loginUser, registerUser
-from database import db_createUser,db_loginUser,db_checkEmail
+from database import db_createUser,db_fetchUser,db_checkEmail,verify_password
 from sessions import create_sessions,get_user_id,delete_session
 from decouple import config
-
-
-
 
 router = APIRouter(tags=["auth"])
 
@@ -22,11 +19,26 @@ def register(user:registerUser):
 
 @router.post('/login')
 def login(user:loginUser,response:Response):
-    result = db_loginUser(user)
-    session_id = create_sessions(user.username)
-    response.set_cookie(key='session_id', value=session_id, httponly=True)
-    return {'message': 'login successful', 'session_id': session_id}
+    User = db_fetchUser(user)
+    print(User)
+    if not User:
+        return "user not found!"
+    hashed = User[3]
+    isverified=verify_password(user.password,hashed)
+    if not isverified:
+        return "invalid password. Please try again."
+    else:
+        session_id = create_sessions(user.username)
+        response.set_cookie(key='session_id', value=session_id, httponly=True)
+        return {'message': 'login successful', 'session_id': session_id}
 
+def me(session_id:str = Cookie(None)):
+    if not session_id:
+        raise HTTPException(status_code=403,detail='login expired/unauthorized')
+    user_id = get_user_id(session_id)
+    if user_id:
+        return {'user':user_id}
+    raise HTTPException(status_code=403,detail='login expired/unauthorized')
 
 @router.post('/logout')
 def logout(response:Response,request:Request):
@@ -35,3 +47,4 @@ def logout(response:Response,request:Request):
         delete_session(session_id)
         response.delete_cookie('session_id')
     return {'message':'logged out'}
+

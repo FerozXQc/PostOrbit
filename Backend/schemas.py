@@ -10,8 +10,14 @@ class registerUser(BaseModel):
     email:str
     password:str
 
-class profileUser(BaseModel):
+# class profileUser(BaseModel):
+#     id:int
+#     username:str
+#     email:str
+#     password:str
+
+
+class Taskschema(BaseModel):
     id:int
-    username:str
-    email:str
-    password:str
+    title:str
+    scheduled_time:str

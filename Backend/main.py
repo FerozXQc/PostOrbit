@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Form, Cookie, Response, HTTPException, Request
-from auth import router as auth_router
+from auth_routes import router as auth_router
 from sessions import create_sessions,get_user_id,delete_session
 from decouple import config
 from fastapi.middleware.cors import CORSMiddleware

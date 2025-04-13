@@ -6,7 +6,8 @@ redis_client=redis.Redis.from_url(config('REDIS_URL'),decode_responses=True)
 
 def create_sessions(user_id:str):
     session_id = secrets.token_hex(20)
-    redis_client.setex(f'session:{session_id}',config('EXPIRY'),user_id)
+    expiry = int(config('EXPIRY'))
+    redis_client.setex(f'session:{session_id}',expiry,user_id)
     return session_id
 
 def get_user_id(session_id:str):
